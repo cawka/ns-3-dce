@@ -8,8 +8,12 @@
 #include "ns3/socket.h"
 #include "ns3/uinteger.h"
 #include "ns3/packet-socket-address.h"
+#include "ns3/log.h"
+#include "ns3/node.h"
 #include <netpacket/packet.h>
 #include <net/ethernet.h>
+
+NS_LOG_COMPONENT_DEFINE("Ns3SocketFdFactory");
 
 namespace ns3 {
 
@@ -26,9 +30,22 @@ Ns3SocketFdFactory::GetTypeId (void)
 }
 
 Ns3SocketFdFactory::Ns3SocketFdFactory ()
+  : m_netlink (0)
 {
-  m_netlink = CreateObject<NetlinkSocketFactory> ();
 }
+
+//this is necessary to assign appropriate Node to NetlinkSocketFactory
+void
+Ns3SocketFdFactory::NotifyNewAggregate (void)
+{
+  Ptr<Node> node = this->GetObject<Node> ();
+  if (m_netlink == 0)
+    {
+      m_netlink = CreateObject<NetlinkSocketFactory> ();
+      node->AggregateObject (m_netlink);
+    }
+}
+
 UnixFd *
 Ns3SocketFdFactory::CreateSocket (int domain, int type, int protocol)
 {
@@ -65,7 +82,9 @@ Ns3SocketFdFactory::CreateSocket (int domain, int type, int protocol)
   else if (domain == PF_NETLINK)
     {
       switch (type) {
+      case SOCK_RAW:
       case SOCK_DGRAM: {
+	NS_LOG_INFO ("Requesting for PF_NETLINK");
 	sock = m_netlink->CreateSocket ();
 	socket = new UnixDatagramSocketFd (sock);
       } break;

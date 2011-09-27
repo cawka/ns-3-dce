@@ -83,7 +83,8 @@ def build_netlink(bld):
         'netlink/netlink-message-route.cc',
         ]
     module_headers = [
-        'netlink/netlink-socket-factory.h'
+        'netlink/netlink-socket-factory.h',
+        'netlink/netlink-socket-address.h',
         ]
     module = ns3waf.create_module(bld, 
                                   name='netlink',
@@ -302,7 +303,7 @@ def build(bld):
         'model/task-manager.h',
         'model/socket-fd-factory.h',
         'model/loader-factory.h',
-	    'model/dce-application.h',
+        'model/dce-application.h',
         'helper/dce-manager-helper.h',
         'helper/dce-application-helper.h',
         ]
