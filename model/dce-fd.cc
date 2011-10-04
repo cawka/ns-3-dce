@@ -61,8 +61,13 @@ NS_LOG_COMPONENT_DEFINE ("SimuFd");
 
 using namespace ns3;
 
-int dce_open (const char *path, int flags, mode_t mode)
+int dce_open (const char *path, int flags, ...)
 {
+  va_list vl;
+  va_start (vl, flags);
+  mode_t mode = va_arg (vl, mode_t);
+  va_end (vl);  
+
   Thread *current = Current ();
   NS_LOG_FUNCTION (current << UtilsGetNodeId () << path << flags);
   NS_ASSERT (current != 0);
@@ -228,8 +233,13 @@ ssize_t dce_sendmsg(int fd, const struct msghdr *msg, int flags)
   ssize_t retval = unixFd->Sendmsg (msg, flags);
   return retval;
 }
-int dce_ioctl (int fd, int request, char *argp)
+int dce_ioctl (int fd, long unsigned int request, ...)
 {
+  va_list vl;
+  va_start (vl, request);
+  char *argp = va_arg (vl, char*);
+  va_end (vl);
+
   Thread *current = Current ();
   NS_LOG_FUNCTION (current << UtilsGetNodeId () << fd << request << argp);
   NS_ASSERT (current != 0);
@@ -1004,8 +1014,13 @@ off64_t dce_lseek64(int fildes, off64_t offset, int whence)
   NS_LOG_DEBUG (retval);
   return retval;    
 }
-int dce_fcntl(int fd, int cmd, unsigned long arg)
+int dce_fcntl(int fd, int cmd, ... /*unsigned long arg*/)
 {
+  va_list vl;
+  va_start (vl, cmd);
+  unsigned long arg = va_arg (vl, unsigned long);
+  va_end (vl);
+
   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << fd << cmd << arg);
   NS_ASSERT (Current () != 0);
   Thread *current = Current ();

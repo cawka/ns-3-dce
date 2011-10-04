@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "dce-global-variables.h"
 #include "process.h"
 #include "utils.h"

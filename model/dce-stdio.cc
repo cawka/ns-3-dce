@@ -420,54 +420,69 @@ int dce_fileno(FILE *stream)
   return status;
 }
 
-int dce_vfprintf(FILE *stream, const char *format, va_list ap)
+// stdio.h
+int dce_printf(const char *format, ...)
 {
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << stream << format);
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << format);
   NS_ASSERT (Current () != 0);
-  // Note: I don't believe that this function sets errno
-  int status = vfprintf (stream, format, ap);
+
+  va_list vl;
+  va_start (vl, format);
+  int status = vfprintf (stdout, format, vl);
+  va_end (vl);
   return status;
 }
-int dce_fputc(int c, FILE *stream)
+// stdarg.h
+int dce_vprintf(const char *format, va_list ap)
 {
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << c << stream);
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << format);
   NS_ASSERT (Current () != 0);
   // Note: I don't believe that this function sets errno
-  int status = fputc (c, stream);
+  int status = vfprintf (stdout, format, ap);
   return status;
 }
-int dce_fgetc(FILE *stream)
-{
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << stream);
-  NS_ASSERT (Current () != 0);
-  // Note: I don't believe that this function sets errno
-  int status = fgetc (stream);
-  return status;
-}
-int dce_fputs(const char *s, FILE *stream)
-{
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << s << stream);
-  NS_ASSERT (Current () != 0);
-  // Note: I don't believe that this function sets errno
-  int status = fputs (s, stream);
-  return status;
-}
-char* dce_fgets(char *s, int size, FILE *stream)
-{
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << s << size << stream);
-  NS_ASSERT (Current () != 0);
-  // Note: I don't believe that this function sets errno
-  char *status = fgets (s, size, stream);
-  return status;
-}
-int dce_ungetc(int c, FILE *stream)
-{
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << c << stream);
-  NS_ASSERT (Current () != 0);
-  // Note: I don't believe that this function sets errno
-  int status = ungetc (c, stream);
-  return status;  
-}
+
+
+// int dce_fputc(int c, FILE *stream)
+// {
+//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << c << stream);
+//   NS_ASSERT (Current () != 0);
+//   // Note: I don't believe that this function sets errno
+//   int status = fputc (c, stream);
+//   return status;
+// }
+// int dce_fgetc(FILE *stream)
+// {
+//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << stream);
+//   NS_ASSERT (Current () != 0);
+//   // Note: I don't believe that this function sets errno
+//   int status = fgetc (stream);
+//   return status;
+// }
+// int dce_fputs(const char *s, FILE *stream)
+// {
+//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << s << stream);
+//   NS_ASSERT (Current () != 0);
+//   // Note: I don't believe that this function sets errno
+//   int status = fputs (s, stream);
+//   return status;
+// }
+// char* dce_fgets(char *s, int size, FILE *stream)
+// {
+//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << s << size << stream);
+//   NS_ASSERT (Current () != 0);
+//   // Note: I don't believe that this function sets errno
+//   char *status = fgets (s, size, stream);
+//   return status;
+// }
+// int dce_ungetc(int c, FILE *stream)
+// {
+//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << c << stream);
+//   NS_ASSERT (Current () != 0);
+//   // Note: I don't believe that this function sets errno
+//   int status = ungetc (c, stream);
+//   return status;  
+// }
 int dce_fseek(FILE *stream, long offset, int whence)
 {
   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << stream << offset << whence);
@@ -559,3 +574,4 @@ int dce_remove (const char *pathname)
     }
   return status;
 }
+

@@ -117,7 +117,7 @@ const char *dce_gai_strerror(int errcode)
   return ::gai_strerror (errcode);
 }
 int dce_getnameinfo (const struct sockaddr *sa, socklen_t salen, char *host,
-                       socklen_t hostlen, char *serv, socklen_t servlen, int flags)
+                       socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags)
 {
   NS_LOG_FUNCTION ( Current () );
 

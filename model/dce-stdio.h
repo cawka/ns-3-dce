@@ -40,6 +40,8 @@ int dce_ungetc(int c, FILE *stream);
 
 int dce_remove (const char *pathname);
 
+int dce_printf(const char *format, ...);
+
 #ifdef __cplusplus
 }
 #endif

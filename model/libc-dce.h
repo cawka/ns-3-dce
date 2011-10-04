@@ -1,13 +1,15 @@
 #ifndef LIBC_SIMU_H
 #define LIBC_SIMU_H
 
-#include "libc.h"
+//#include "libc.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void libc_dce (struct Libc *libc);
+struct Libc;
+
+void libc_dce (struct Libc **libc);
 
 #ifdef __cplusplus
 }
