@@ -3,7 +3,6 @@
 #include <netinet/in.h>
 #include "libc-globals.h"
 
-
 FILE *stdin;
 FILE *stdout;
 FILE *stderr;

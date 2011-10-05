@@ -1,13 +1,31 @@
 /**
  * \file This files defines list of redirected (NATIVE) or redefined (DCE) libc methods
  *
- * Macros NATIVE and DCE should be explicitly defined for the appropriate action before including this header
+ * There is also a variants NATIVE_WITH_ALIAS and DCE_WITH_ALIAS macros that can be used to define
+ * two symbols: name and __name pointing to the same function call.
+ *
+ * Macro DCE should be defined before including this macros.  If NATIVE is not defined, it is defaulted
+ * to DCE.  NATIVE_WITH_ALIAS is defaulted to NATIVE, DCE_WITH_ALIAS is defaulted to DCE.
  */
 
-#if !defined(NATIVE) || !defined(DCE)
-#error Macros NATIVE and DCE should be defined before including libc-ns3.h
+#ifndef DCE
+#error Macro DCE should be defined before including libc-ns3.h
 #endif
 
+#ifndef NATIVE
+#define NATIVE DCE
+#endif
+
+#ifndef NATIVE_WITH_ALIAS
+#define NATIVE_WITH_ALIAS NATIVE
+#endif
+
+#ifndef DCE_WITH_ALIAS
+#define DCE_WITH_ALIAS DCE
+#endif
+
+
+// not really a libc function, but we still need to get pointer from DCE to this function
 NATIVE (dce_global_variables_setup)
 
 NATIVE (strerror)
@@ -18,13 +36,14 @@ NATIVE (strerror)
 DCE    (atexit)
 DCE    (__cxa_finalize)
 DCE    (__cxa_atexit)
-//NATIVE (__gxx_personality_v0)
+// NATIVE (__gxx_personality_v0)
 
-NATIVE (newlocale)
-NATIVE (uselocale)
+NATIVE_WITH_ALIAS (newlocale)
+NATIVE_WITH_ALIAS (uselocale)
+NATIVE_WITH_ALIAS (wctype_l)
+
 NATIVE (wctob)
 NATIVE (btowc)
-NATIVE (wctype_l)
 
 NATIVE (htonl)
 NATIVE (htons)
@@ -49,12 +68,12 @@ NATIVE (strncat)
 NATIVE (strcmp)
 NATIVE (strncmp)
 NATIVE (strlen)
-//NATIVE (strchr)
-//NATIVE (strrchr)
+NATIVE (strchr)
+NATIVE (strrchr)
 NATIVE (strcasecmp)
 NATIVE (strncasecmp)
 
-DCE    (strdup)
+DCE_WITH_ALIAS (strdup)
 DCE    (strndup)
 DCE    (sleep)
 DCE    (fopen)
@@ -299,3 +318,6 @@ DCE    (waitpid)
 
 #undef DCE
 #undef NATIVE
+#undef NATIVE_WITH_ALIAS
+#undef DCE_WITH_ALIAS
+
