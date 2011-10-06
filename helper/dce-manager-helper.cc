@@ -88,7 +88,7 @@ DceManagerHelper::Install (NodeContainer nodes)
       Ptr<SocketFdFactory> networkStack = m_networkStackFactory.Create<SocketFdFactory> ();
 
       taskManager->SetScheduler (scheduler);
-      manager->SetAttribute ("FirstPid", UintegerValue (g_firstPid.GetInteger (0, 0xffff)));
+      // manager->SetAttribute ("FirstPid", UintegerValue (g_firstPid.GetInteger (0, 0xffff)));
       Ptr<Node> node = *i;
       node->AggregateObject (taskManager);
       node->AggregateObject (loader);
