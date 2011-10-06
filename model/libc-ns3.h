@@ -1,11 +1,17 @@
 /**
- * \file This files defines list of redirected (NATIVE) or redefined (DCE) libc methods
+ * \file This files defines list of redirected (NATIVE) or redefined
+ * (DCE) libc methods
  *
- * There is also a variants NATIVE_WITH_ALIAS and DCE_WITH_ALIAS macros that can be used to define
- * two symbols: name and __name pointing to the same function call.
+ * There is also a variants NATIVE_WITH_ALIAS and DCE_WITH_ALIAS
+ * macros that can be used to define two symbols: name and __name
+ * pointing to the same function call.
  *
- * Macro DCE should be defined before including this macros.  If NATIVE is not defined, it is defaulted
- * to DCE.  NATIVE_WITH_ALIAS is defaulted to NATIVE, DCE_WITH_ALIAS is defaulted to DCE.
+ * Macro DCE should be defined before including this macros.  If
+ * NATIVE is not defined, it is defaulted to DCE.  NATIVE_WITH_ALIAS
+ * is defaulted to NATIVE, DCE_WITH_ALIAS is defaulted to DCE.
+ * DCE_WITH_ALIAS2 is similar to DCE_WITH_ALIAS but accepts two
+ * parameter, name of the function (will be weak alias) and name of
+ * the internal implementation
  */
 
 #ifndef DCE
@@ -24,14 +30,23 @@
 #define DCE_WITH_ALIAS DCE
 #endif
 
+#ifndef DCE_WITH_ALIAS2
+#define DCE_WITH_ALIAS2(name,internal) DCE_WITH_ALIAS(name)
+#endif
+
 #ifndef NATIVE_EXPLICIT
 #define NATIVE_EXPLICIT(name,type) NATIVE(name)
 #endif
+
+// #ifndef ALIAS
+// #define ALIAS(base_function, alias_name)
+// #endif
 
 // // not really a libc function, but we still need to get pointer from DCE to this function
 NATIVE (dce_global_variables_setup)
 
 NATIVE (strerror)
+NATIVE (strerror_r)
 // Not sure where it is defined and implemented
 // NATIVE (__xpg_strerror_r) 
 
@@ -41,9 +56,10 @@ DCE    (__cxa_atexit)
 // Not sure where it is defined and implemented
 //NATIVE (__gxx_personality_v0)
 
+DCE    (setlocale)
+
 NATIVE_WITH_ALIAS (newlocale)
 NATIVE_WITH_ALIAS (uselocale)
-NATIVE_WITH_ALIAS (wctype_l)
 
 NATIVE (wctob)
 NATIVE (btowc)
@@ -72,8 +88,8 @@ NATIVE (strcmp)
 NATIVE (strncmp)
 NATIVE (strlen)
 // because C++ defines both const and non-const functions
-NATIVE_EXPLICIT (strchr, char* (*) (char *, int))
-NATIVE_EXPLICIT (strrchr, char * (*) (char *, int))
+NATIVE_EXPLICIT (strchr, const char* (*) (const char *, int))
+NATIVE_EXPLICIT (strrchr, const char * (*) (const char *, int))
 NATIVE (strcasecmp)
 NATIVE (strncasecmp)
 
@@ -81,10 +97,14 @@ DCE_WITH_ALIAS (strdup)
 DCE    (strndup)
 DCE    (sleep)
 DCE    (clearerr)
-DCE    (setvbuf)
-DCE    (rewind)
 
 // stdio
+DCE    (setvbuf)
+DCE    (setbuf)
+DCE    (setbuffer)
+DCE    (setlinebuf)
+DCE    (rewind)
+
 DCE    (printf)
 NATIVE (fprintf)
 NATIVE (sprintf)
@@ -150,15 +170,15 @@ DCE    (jrand48)
 DCE    (srand48)
 DCE    (lcong48)
 
-// NATIVE (drand48)
-// NATIVE (erand48)
-// NATIVE (lrand48)
-// NATIVE (nrand48)
-// NATIVE (mrand48)
-// NATIVE (jrand48)
-// NATIVE (srand48)
-// NATIVE (seed48)
-// NATIVE (lcong48)
+NATIVE (drand48_r)
+NATIVE (erand48_r)
+NATIVE (lrand48_r)
+NATIVE (nrand48_r)
+NATIVE (mrand48_r)
+NATIVE (jrand48_r)
+NATIVE (srand48_r)
+NATIVE (seed48_r)
+NATIVE (lcong48_r)
 
 DCE    (__errno_location)
 DCE    (getopt)
@@ -183,6 +203,7 @@ NATIVE (inet_makeaddr)
 NATIVE (inet_lnaof)
 NATIVE (inet_netof)
 NATIVE (inet_addr)
+DCE    (mmap)
 DCE    (mmap64)
 DCE    (munmap)
 DCE    (__xstat)
@@ -194,6 +215,7 @@ DCE    (__fxstat64)
 DCE    (dup)
 DCE    (dup2)
 DCE    (open)
+DCE    (open64)
 DCE    (close)
 DCE    (unlink)
 DCE    (remove)
@@ -236,7 +258,7 @@ NATIVE (sigfillset)
 NATIVE (sigaddset)
 NATIVE (sigdelset)
 NATIVE (sigismember)
-DCE    (strtol)
+DCE_WITH_ALIAS2(strtol, __strtol_internal)
 DCE    (strtoll)
 DCE    (strtoul)
 DCE    (strtoull)
@@ -246,11 +268,25 @@ DCE    (getwd)
 DCE    (get_current_dir_name)
 DCE    (chdir)
 DCE    (fchdir)
-NATIVE (localtime)
-NATIVE (strftime)
-NATIVE (__ctype_b_loc)
-NATIVE (gmtime_r)
 
+// time.h
+DCE    (asctime)
+NATIVE (asctime_r)
+DCE    (ctime)
+NATIVE (ctime_r)
+DCE    (gmtime)
+NATIVE (gmtime_r)
+DCE    (localtime)
+NATIVE (localtime_r)
+NATIVE (mktime)
+NATIVE (strftime)
+
+// ctype.h
+NATIVE (__ctype_b_loc)
+NATIVE_WITH_ALIAS (wctype_l)
+NATIVE (__ctype_tolower_loc)
+
+// pthread.h
 DCE    (pthread_create)
 DCE    (pthread_exit)
 DCE    (pthread_self)
@@ -287,11 +323,18 @@ DCE    (pthread_cond_wait)
 DCE    (pthread_condattr_destroy)
 DCE    (pthread_condattr_init)
 
+// netdb.h
 DCE    (gethostbyname)
 DCE    (gethostbyname2)
 DCE    (getaddrinfo)
+// these three calls will effectively use /etc/passwd on the base system 
+NATIVE (gethostent)
+NATIVE (sethostent)
+NATIVE (endhostent)
 DCE    (freeaddrinfo)
 DCE    (gai_strerror)
+DCE    (herror)
+NATIVE (hstrerror) // this could be replaced by DCE call
 
 DCE    (getenv)
 DCE    (putenv)
@@ -312,10 +355,8 @@ DCE    (fork)
 NATIVE (qsort)
 DCE    (umask)
 DCE    (abort)
-NATIVE (__ctype_tolower_loc)
-NATIVE (ctime)
-//NATIVE (index)
-//NATIVE (rindex)
+NATIVE_EXPLICIT (index, const char * (*) (const char *, int))
+NATIVE_EXPLICIT (rindex, const char * (*) (const char *, int))
 NATIVE (strtok)
 NATIVE (strtok_r)
 DCE    (getnameinfo)
@@ -336,4 +377,5 @@ DCE    (waitpid)
 #undef NATIVE_WITH_ALIAS
 #undef NATIVE_EXPLICIT
 #undef DCE_WITH_ALIAS
+#undef DCE_WITH_ALIAS2
 

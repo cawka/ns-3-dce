@@ -590,6 +590,21 @@ int dce_setvbuf(FILE *stream, char *buf, int mode, size_t size)
   return status;
 }
 
+void dce_setbuf(FILE *stream, char *buf)
+{
+  dce_setvbuf (stream, buf, buf ? _IOFBF : _IONBF, BUFSIZ);
+}
+
+void dce_setbuffer(FILE *stream, char *buf, size_t size)
+{
+  dce_setvbuf (stream, buf, buf ? _IOFBF : _IONBF, size);
+}
+
+void dce_setlinebuf(FILE *stream)
+{
+  dce_setvbuf (stream, (char *) NULL, _IOLBF, 0);
+}
+
 int dce_remove (const char *pathname)
 {
   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << pathname);

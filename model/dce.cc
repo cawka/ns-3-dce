@@ -11,12 +11,10 @@
 #include "dce-stdio.h"
 #include "dce-stdarg.h"
 #include "dce-stdlib.h"
+#include "dce-locale.h"
 #include "sys/dce-ioctl.h"
 #include "dce-sched.h"
 #include "arpa/dce-inet.h"
-#include "ns3/node.h"
-#include "ns3/log.h"
-#include "ns3/simulator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
@@ -24,10 +22,12 @@
 #include <fcntl.h>
 #include "dce-random.h"
 #include "net/dce-if.h"
+#include "ns3/node.h"
+#include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "ns3/names.h"
 #include "ns3/random-variable.h"
 #include "ns3/ipv4-l3-protocol.h"
-
 
 NS_LOG_COMPONENT_DEFINE ("Dce");
 
@@ -270,17 +270,6 @@ int dce_gettimeofday (struct timeval *tv, struct timezone *tz)
   NS_ASSERT (tz == 0);
   *tv = UtilsTimeToTimeval (UtilsSimulationTimeToTime (Now ()));
   return 0;
-}
-time_t dce_time (time_t *t)
-{
-  NS_LOG_FUNCTION (Current () << UtilsGetNodeId ());
-  NS_ASSERT (Current () != 0);
-  time_t time = (time_t)UtilsSimulationTimeToTime (Now ()).GetSeconds ();
-  if (t != 0)
-    {
-      *t = time;
-    }
-  return time;
 }
 int dce_nanosleep (const struct timespec *req, struct timespec *rem) {
   Thread *current = Current ();
@@ -810,4 +799,10 @@ int dce_execle (const char *path, const char *arg, ...)
   dce_free (argv);
 
   return retval;
+}
+
+char *dce_setlocale (int category, const char *locale)
+{
+  static char loc[] = "";
+  return loc;
 }

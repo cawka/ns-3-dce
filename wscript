@@ -262,6 +262,7 @@ def build(bld):
         'model/dce-env.cc',
         'model/dce-pthread-cond.cc',
         'model/dce-timerfd.cc',
+        'model/dce-time.cc',
         'model/dce-stat.cc',
         'model/dce-global-variables.cc',
         'model/cmsg.cc',

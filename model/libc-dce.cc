@@ -33,6 +33,7 @@
 #include "dce-umask.h"
 #include "dce-misc.h"
 #include "dce-wait.h"
+#include "dce-locale.h"
 #include "net/dce-if.h"
 
 #include <arpa/inet.h>

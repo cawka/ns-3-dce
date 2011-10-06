@@ -17,6 +17,8 @@ const char *dce_gai_strerror(int errcode);
 int dce_getnameinfo (const struct sockaddr *sa, socklen_t salen, char *host,
                        socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags);
 
+void dce_herror(const char *string);
+
 #ifdef __cplusplus
 }
 #endif

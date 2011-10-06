@@ -14,20 +14,26 @@ extern "C" {
 // function calls with a large number of arguments.
 // \see http://tigcc.ticalc.org/doc/gnuexts.html#SEC67___builtin_apply_args
 #define NATIVE DCE
-#define DCE(name)														\
-	void name (...) {													\
+#define NATIVE_WITH_ALIAS DCE_WITH_ALIAS
+
+#define GCC_BUILTIN_APPLY(export_symbol, func_to_call)					\
+	void export_symbol (...) {											\
 		void *args =  __builtin_apply_args();							\
-		void *result = __builtin_apply( g_libc.name ## _fn, args, 256 ); \
+		void *result = __builtin_apply( g_libc.func_to_call ## _fn, args, 256 ); \
 		__builtin_return (result);										\
 	}
-	
-#define NATIVE_WITH_ALIAS(name)						\
-	NATIVE(name);								\
-	weak_alias(name,__ ## name);
 
-#define DCE_WITH_ALIAS(name)						\
-	NATIVE(name);								\
-	weak_alias(name,__ ## name);
+#define DCE(name)								\
+	GCC_BUILTIN_APPLY(name,name)
+	
+#define DCE_WITH_ALIAS(name)					\
+	GCC_BUILTIN_APPLY(__ ## name,name)			\
+	weak_alias(__ ## name, name);
+
+#define DCE_WITH_ALIAS2(name, internal)			\
+	GCC_BUILTIN_APPLY(internal,name)			\
+	weak_alias(internal, name);
+   
 
 // Note: it looks like that the stdio.h header does
 // not define putc and getc as macros if you include
@@ -38,6 +44,7 @@ extern "C" {
 	
 #include "libc-ns3.h" // do the work
 
+// weak_alias (strtol, __strtol_internal);
 // weak_alias (wctype_l, __wctype_l);
 // weak_alias (strdup, __strdup);
 	

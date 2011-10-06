@@ -28,6 +28,9 @@ int dce_fsetpos(FILE *stream, const fpos_t *pos);
 void dce_rewind(FILE *stream);
 
 int dce_setvbuf(FILE *stream, char *buf, int mode, size_t size);
+void dce_setbuf(FILE *stream, char *buf);
+void dce_setbuffer(FILE *stream, char *buf, size_t size);
+void dce_setlinebuf(FILE *stream);
 
 size_t dce_fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
 size_t dce_fwrite(const void *ptr, size_t size, size_t nmemb,

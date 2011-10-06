@@ -61,11 +61,27 @@ NS_LOG_COMPONENT_DEFINE ("SimuFd");
 
 using namespace ns3;
 
+int dce_open64 (const char *path, int flags, ...)
+{
+  va_list vl;
+  va_start (vl, flags);
+  // hope this trick actually works...
+  int status = dce_open (path, flags, vl);
+  va_end (vl);
+
+  return status;
+}
+
 int dce_open (const char *path, int flags, ...)
 {
   va_list vl;
   va_start (vl, flags);
-  mode_t mode = va_arg (vl, mode_t);
+
+  mode_t mode = 0;
+  if (flags & O_CREAT)
+    {
+      mode = va_arg (vl, mode_t);
+    }
   va_end (vl);  
 
   Thread *current = Current ();
@@ -964,8 +980,15 @@ int dce_dup2(int oldfd, int newfd)
   current->process->openFiles.push_back (std::make_pair (newfd, unixFd));
   return newfd;
 }
+
+void *dce_mmap (void *addr, size_t length, int prot, int flags,
+			int fd, off_t offset)
+{
+  return dce_mmap64 (addr, length, prot, flags, fd, offset);
+}
+
 void *dce_mmap64 (void *start, size_t length, int prot, int flags,
-		   int fd, off64_t offset)
+				  int fd, off64_t offset)
 {
   Thread *current = Current ();
   NS_LOG_FUNCTION (current << UtilsGetNodeId () << start << length << prot << flags << fd << offset);
