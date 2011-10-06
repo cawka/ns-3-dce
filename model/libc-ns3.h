@@ -24,19 +24,22 @@
 #define DCE_WITH_ALIAS DCE
 #endif
 
+#ifndef NATIVE_EXPLICIT
+#define NATIVE_EXPLICIT(name,type) NATIVE(name)
+#endif
 
-// not really a libc function, but we still need to get pointer from DCE to this function
+// // not really a libc function, but we still need to get pointer from DCE to this function
 NATIVE (dce_global_variables_setup)
 
 NATIVE (strerror)
-// NATIVE (gnu_strerror_r)
-// // NATIVE (xsi_strerror_r)
-// // libc->xsi_strerror_r)
+// Not sure where it is defined and implemented
+// NATIVE (__xpg_strerror_r) 
 
 DCE    (atexit)
 DCE    (__cxa_finalize)
 DCE    (__cxa_atexit)
-// NATIVE (__gxx_personality_v0)
+// Not sure where it is defined and implemented
+//NATIVE (__gxx_personality_v0)
 
 NATIVE_WITH_ALIAS (newlocale)
 NATIVE_WITH_ALIAS (uselocale)
@@ -68,29 +71,15 @@ NATIVE (strncat)
 NATIVE (strcmp)
 NATIVE (strncmp)
 NATIVE (strlen)
-NATIVE (strchr)
-NATIVE (strrchr)
+// because C++ defines both const and non-const functions
+NATIVE_EXPLICIT (strchr, char* (*) (char *, int))
+NATIVE_EXPLICIT (strrchr, char * (*) (char *, int))
 NATIVE (strcasecmp)
 NATIVE (strncasecmp)
 
 DCE_WITH_ALIAS (strdup)
 DCE    (strndup)
 DCE    (sleep)
-DCE    (fopen)
-DCE    (fdopen)
-DCE    (freopen)
-DCE    (fclose)
-DCE    (fcloseall)
-DCE    (fread)
-DCE    (fwrite)
-DCE    (fflush)
-DCE    (fseek)
-DCE    (ftell)
-DCE    (fgetpos)
-DCE    (fsetpos)
-DCE    (ferror)
-DCE    (feof)
-DCE    (fileno)
 DCE    (clearerr)
 DCE    (setvbuf)
 DCE    (rewind)
@@ -103,6 +92,38 @@ NATIVE (snprintf)
 NATIVE (asprintf)
 NATIVE (dprintf)
 
+DCE    (fgetc)
+NATIVE (getc)
+DCE    (getchar)
+DCE    (_IO_getc)
+DCE    (fputc)
+NATIVE (putc)
+DCE    (putchar)
+DCE    (_IO_putc)
+DCE    (fgets)
+DCE    (fputs)
+DCE    (puts)
+DCE    (ungetc)
+
+DCE    (fclose)
+DCE    (fflush)
+DCE    (fcloseall)
+DCE    (fopen)
+DCE    (freopen)
+DCE    (fdopen)
+
+DCE    (fread)
+DCE    (fwrite)
+DCE    (fseek)
+DCE    (ftell)
+DCE    (fgetpos)
+DCE    (fsetpos)
+DCE    (ferror)
+DCE    (feof)
+DCE    (fileno)
+
+DCE    (perror)
+
 // stdarg
 DCE    (vprintf)
 NATIVE (vfprintf)
@@ -111,11 +132,6 @@ NATIVE (vsnprintf)
 NATIVE (vasprintf)
 NATIVE (vdprintf)
 
-NATIVE (fputc)
-NATIVE (fputs)
-NATIVE (fgetc)
-NATIVE (fgets)
-NATIVE (ungetc)
 
 DCE    (fcntl)
 DCE    (nanosleep)
@@ -145,9 +161,8 @@ DCE    (lcong48)
 // NATIVE (lcong48)
 
 DCE    (__errno_location)
-// Most likely getopt and getopt_long are broken. originally there was some hack
-NATIVE (getopt)
-NATIVE (getopt_long)
+DCE    (getopt)
+DCE    (getopt_long)
 DCE    (getpid)
 DCE    (getppid)
 DCE    (getuid)
@@ -297,7 +312,7 @@ DCE    (fork)
 NATIVE (qsort)
 DCE    (umask)
 DCE    (abort)
-//NATIVE (ctype_tolower_loc)
+NATIVE (__ctype_tolower_loc)
 NATIVE (ctime)
 //NATIVE (index)
 //NATIVE (rindex)
@@ -319,5 +334,6 @@ DCE    (waitpid)
 #undef DCE
 #undef NATIVE
 #undef NATIVE_WITH_ALIAS
+#undef NATIVE_EXPLICIT
 #undef DCE_WITH_ALIAS
 

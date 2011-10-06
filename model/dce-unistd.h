@@ -21,11 +21,9 @@ unsigned int dce_sleep(unsigned int seconds);
 pid_t dce_getpid (void);
 pid_t dce_getppid (void);
 int dce_pause (void);
-// int dce_getopt (int argc, char * const argv[], const char *optstring, 
-// 		   char **poptarg, int *poptind, int *popterr, int *poptopt);
-// int dce_getopt_long (int argc, char * const argv[], const char *optstring, 
-// 		   const struct option *longopts, int *longindex,
-// 		   char **poptarg, int *poptind, int *popterr, int *poptopt);
+int dce_getopt (int argc, char * const argv[], const char *optstringt);
+int dce_getopt_long (int argc, char * const argv[], const char *optstring, 
+					 const struct option *longopts, int *longindex);
 uid_t dce_getuid(void);
 uid_t dce_geteuid(void);
 int dce_setuid(uid_t uid);

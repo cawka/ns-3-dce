@@ -17,6 +17,10 @@ void setup_global_variables ()
   globals.pstdout = &stdout;
   globals.pstderr = &stderr;
   globals.penvp = &environ;
+  globals.poptarg = &optarg;
+  globals.popterr = &opterr;
+  globals.poptind = &optind;
+  globals.poptopt = &optopt;
 
   typedef void (*dce_global_variables_setup_t) (struct SimuGlobalVariables *);
   ((dce_global_variables_setup_t)g_libc.dce_global_variables_setup_fn) (&globals);

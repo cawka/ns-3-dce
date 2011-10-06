@@ -41,6 +41,13 @@ int dce_ungetc(int c, FILE *stream);
 int dce_remove (const char *pathname);
 
 int dce_printf(const char *format, ...);
+int dce_getchar (void);
+int dce__IO_getc (FILE *stream);
+int dce_putchar (int __c);
+int dce__IO_putc (int __c, FILE *__stream);
+int dce_puts (const char *__s);
+	
+void dce_perror(const char *s);
 
 #ifdef __cplusplus
 }

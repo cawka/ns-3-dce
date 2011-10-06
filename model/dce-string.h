@@ -10,8 +10,6 @@ extern "C" {
 char *dce_strdup(const char *s);
 char *dce_strndup(const char *s, size_t n);
 
-
-
 #ifdef __cplusplus
 }
 #endif

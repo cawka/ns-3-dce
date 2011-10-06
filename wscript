@@ -336,7 +336,7 @@ def build(bld):
 
     # The very small libc used to replace the glibc
     # and forward to the dce_* code
-    bld.shlib(source = ['model/libc.cc', 'model/libc-global-variables.cc'],
+    bld.shlib(source = ['model/libc.cc', 'model/libc-setup.cc', 'model/libc-global-variables.cc'],
               target='lib/c-ns3', cflags=['-g'],
               defines=['LIBSETUP=libc_setup'],
               linkflags=['-nostdlib', 
@@ -345,7 +345,7 @@ def build(bld):
 
     # The very small libpthread used to replace the glibc
     # and forward to the dce_* code
-    bld.shlib(source = ['model/libc.cc'],
+    bld.shlib(source = ['model/libc.cc', 'model/libc-setup.cc'],
               target='lib/pthread-ns3', cflags=['-g'],
               defines=['LIBSETUP=libpthread_setup'],
               linkflags=['-nostdlib', '-lc',

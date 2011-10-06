@@ -29,7 +29,7 @@
 #include "ns3/ipv4-l3-protocol.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("Simu");
+NS_LOG_COMPONENT_DEFINE ("Dce");
 
 using namespace ns3;
 
@@ -420,68 +420,66 @@ const char *dce_inet_ntop(int af, const void *src,
   return retval;
 }
 
-// int dce_getopt (int argc, char * const argv[], const char *optstring, 
-// 		   char **poptarg, int *poptind, int *popterr, int *poptopt)
-// {
-//   NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << argc << argv << optstring << poptarg << 
-// 		   poptind << popterr << poptopt);
-//   NS_ASSERT (Current () != 0);
-//   NS_LOG_DEBUG ("optind=" << *poptind << 
-// 		" opterr=" << *popterr << 
-// 		" optopt=" << *poptopt);
-//   /* The following is pretty evil but it all comes down to the fact
-//    * that the libc does not export getopt_internal_r which is really the
-//    * function we want to call here.
-//    */
-//   char *optargsaved = optarg;
-//   int optindsaved = optind;
-//   int opterrsaved = opterr;
-//   int optoptsaved = optopt;
-//   optarg = *poptarg;
-//   optind = *poptind;
-//   opterr = *popterr;
-//   optopt = *poptopt;
-//   int retval = getopt (argc, argv, optstring);
-//   *poptarg = optarg;
-//   *poptind = optind;
-//   *popterr = opterr;
-//   *poptopt = optopt;
-//   optarg = optargsaved;
-//   optind = optindsaved;
-//   opterr = opterrsaved;
-//   optopt = optoptsaved;
-//   return retval;
-// }
-// int dce_getopt_long (int argc, char * const argv[], const char *optstring, 
-//                         const struct option *longopts, int *longindex,
-//                         char **poptarg, int *poptind, int *popterr, int *poptopt)
-// {
-//   NS_LOG_FUNCTION (Current () << "node" << UtilsGetNodeId () << argc << argv << optstring << 
-//                    longopts << longindex);
-//   NS_ASSERT (Current () != 0);
-//   /* The following is pretty evil but it all comes down to the fact
-//    * that the libc does not export getopt_internal_r which is really the
-//    * function we want to call here.
-//    */
-//   char *optargsaved = optarg;
-//   int optindsaved = optind;
-//   int opterrsaved = opterr;
-//   int optoptsaved = optopt;
-//   optarg = *poptarg;
-//   optind = *poptind;
-//   opterr = *popterr;
-//   optopt = *poptopt;
-//   int retval = getopt_long (argc, argv, optstring, longopts, longindex);
-//   *poptarg = optarg;
-//   *poptind = optind;
-//   *popterr = opterr;
-//   *poptopt = optopt;
-//   optarg = optargsaved;
-//   optind = optindsaved;
-//   opterr = opterrsaved;
-//   optopt = optoptsaved;
-//   return retval;
-// }
+int dce_getopt (int argc, char * const argv[], const char *optstring)
+{
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId () << argc << argv << optstring);
+  NS_ASSERT (Current () != 0);
+  Process *process = Current ()->process;
+
+  /* The following is pretty evil but it all comes down to the fact
+   * that the libc does not export getopt_internal_r which is really the
+   * function we want to call here.
+   */
+  char *optargsaved = optarg;
+  int optindsaved = optind;
+  int opterrsaved = opterr;
+  int optoptsaved = optopt;
+  optarg = *process->poptarg;
+  optind = *process->poptind;
+  opterr = *process->popterr;
+  optopt = *process->poptopt;
+  int retval = getopt (argc, argv, optstring);
+  *process->poptarg = optarg;
+  *process->poptind = optind;
+  *process->popterr = opterr;
+  *process->poptopt = optopt;
+  optarg = optargsaved;
+  optind = optindsaved;
+  opterr = opterrsaved;
+  optopt = optoptsaved;
+  return retval;
+}
+int dce_getopt_long (int argc, char * const argv[], const char *optstring, 
+					 const struct option *longopts, int *longindex)
+{
+  NS_LOG_FUNCTION (Current () << "node" << UtilsGetNodeId () << argc << argv << optstring << 
+                   longopts << longindex);
+  NS_ASSERT (Current () != 0);
+  Process *process = Current ()->process;
+  
+  /* The following is pretty evil but it all comes down to the fact
+   * that the libc does not export getopt_internal_r which is really the
+   * function we want to call here.
+   */
+  char *optargsaved = optarg;
+  int optindsaved = optind;
+  int opterrsaved = opterr;
+  int optoptsaved = optopt;
+  optarg = *process->poptarg;
+  optind = *process->poptind;
+  opterr = *process->popterr;
+  optopt = *process->poptopt;
+  int retval = getopt_long (argc, argv, optstring, longopts, longindex);
+  *process->poptarg = optarg;
+  *process->poptind = optind;
+  *process->popterr = opterr;
+  *process->poptopt = optopt;
+  optarg = optargsaved;
+  optind = optindsaved;
+  opterr = opterrsaved;
+  optopt = optoptsaved;
+  return retval;
+}
 int dce_sched_yield (void)
 {
   Thread *current = Current ();

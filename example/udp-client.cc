@@ -4,7 +4,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <iostream>
-
+#include <stdio.h>
 
 int main (int argc, char *argv[])
 {
@@ -36,6 +36,7 @@ int main (int argc, char *argv[])
     }
 
   std::cout << "did write all buffers" << std::endl;
+  printf ("test\n");
 
   close (sock);
 

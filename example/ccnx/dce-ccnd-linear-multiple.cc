@@ -46,7 +46,7 @@ int main (int argc, char *argv[])
   //
   // Default number of nodes.  Overridable by command line argument.
   //
-  uint32_t nNodes = 8;
+  uint32_t nNodes = 2;
   bool useTcp = 0;
   std::string animFile = "NetAnim.tr";
   bool useKernel = 0;

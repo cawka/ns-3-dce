@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
 
   putter = dce.Install (nodes.Get (0));
   putter.Start (Seconds (5.0));
-
+  
   dce.ResetArguments();
 //  dce.ResetEnvironment();
   dce.SetBinary ("ccnget");

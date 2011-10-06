@@ -12,6 +12,10 @@ struct SimuGlobalVariables
   FILE **pstdout;
   FILE **pstderr;
   char ***penvp;
+  char **poptarg;
+  int *poptind;
+  int *popterr;
+  int *poptopt;
 };
 
 void dce_global_variables_setup (struct SimuGlobalVariables *variables);

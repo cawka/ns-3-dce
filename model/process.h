@@ -150,6 +150,10 @@ struct Process
   FILE **pstdout;
   FILE **pstderr;
   char ***penvp;
+  char **poptarg;
+  int *poptind;
+  int *popterr;
+  int *poptopt;
   uint32_t nodeId; // NS3 NODE ID
   uint8_t minimizeFiles; // If true close stderr and stdout between writes .
   // an array of memory buffers which must be freed upon process 
