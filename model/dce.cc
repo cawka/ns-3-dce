@@ -537,8 +537,8 @@ int dce_setitimer(int which, const struct itimerval *value,
 char *dce_getcwd (char *buf, size_t size)
 {
   Thread *current = Current ();
-  NS_LOG_FUNCTION (current << UtilsGetNodeId () << buf << size);
   NS_ASSERT (current != 0);
+  NS_LOG_FUNCTION (current << UtilsGetNodeId ());
   uint32_t cwd_size = current->process->cwd.size ();
   if ((buf != 0 && size < cwd_size + 1)
       || (buf == 0 && size != 0 && size < cwd_size + 1))
