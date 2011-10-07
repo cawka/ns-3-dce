@@ -52,6 +52,15 @@ int dce_puts (const char *__s);
 	
 void dce_perror(const char *s);
 
+int dce___printf_chk (int __flag, __const char *__restrict __format, ...);
+int dce___vfprintf_chk (FILE *__restrict __stream, int __flag,
+						__const char *__restrict __format, _G_va_list __ap);
+int dce___fprintf_chk (FILE *__restrict __stream, int __flag,
+					   __const char *__restrict __format, ...);
+int dce___snprintf_chk (char *__restrict __s, size_t __n, int __flag,
+						size_t __slen, __const char *__restrict __format, ...);
+
+	
 #ifdef __cplusplus
 }
 #endif

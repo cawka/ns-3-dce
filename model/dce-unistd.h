@@ -57,6 +57,9 @@ int dce_execlp (const char *file, const char *arg, ...);
 int dce_execvp (const char *file, char *const argv[]);
 int dce_execle (const char *path, const char *arg, ...);
 
+int dce_truncate (const char *path, off_t length);
+int dce_ftruncate (int fd, off_t length);
+	
 #ifdef __cplusplus
 }
 #endif

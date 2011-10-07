@@ -631,3 +631,50 @@ void dce_perror(const char *s)
 
   fprintf (*Current ()->process->pstderr, "%s: %s\n", s, strerror (*__errno_location ()));
 }
+
+int dce___printf_chk (int __flag, __const char *__restrict __format, ...)
+{
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId ());
+  NS_ASSERT (Current () != 0);
+  
+  va_list ap;
+  va_start (ap, __format);
+  int retval = vfprintf (*Current ()->process->pstdout, __format, ap);
+  va_end (ap);
+  return retval;
+}
+
+int dce___vfprintf_chk (FILE *__restrict __stream, int __flag,
+						__const char *__restrict __format, _G_va_list __ap)
+{
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId ());
+  NS_ASSERT (Current () != 0);
+
+  return vfprintf (__stream, __format, __ap);
+}
+
+int dce___fprintf_chk (FILE *__restrict __stream, int __flag,
+					   __const char *__restrict __format, ...)
+{
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId ());
+  NS_ASSERT (Current () != 0);
+
+  va_list ap;
+  va_start (ap, __format);
+  int retval = vfprintf (__stream, __format, ap);
+  va_end (ap);
+  return retval;
+}
+
+int dce___snprintf_chk (char *__restrict __s, size_t __n, int __flag,
+						size_t __slen, __const char *__restrict __format, ...)
+{
+  NS_LOG_FUNCTION (Current () << UtilsGetNodeId ());
+  NS_ASSERT (Current () != 0);
+
+  va_list ap;
+  va_start (ap, __format);
+  int retval = vsnprintf (__s, __n, __format, ap);
+  va_end (ap);
+  return retval;
+}

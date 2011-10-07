@@ -1060,3 +1060,36 @@ int dce_fcntl(int fd, int cmd, ... /*unsigned long arg*/)
   int retval = unixFd->Fcntl (cmd, arg);
   return retval;    
 }
+
+int dce_truncate (const char *path, off_t length)
+{
+  Thread *current = Current ();
+  NS_ASSERT (current != 0);
+  NS_LOG_FUNCTION (current << UtilsGetNodeId () << path << length);
+
+  int fd = dce_open (path, O_WRONLY, 0);
+  if (fd == -1)
+	{
+	  current->err = errno;
+	  return -1;
+	}
+
+  return dce_ftruncate (fd, length);
+}
+
+int dce_ftruncate (int fildes, off_t length)
+{
+  Thread *current = Current ();
+  NS_ASSERT (current != 0);
+  NS_LOG_FUNCTION (current << UtilsGetNodeId () << fildes << length);
+
+  int index = UtilsSearchOpenFd (fildes);
+  if (index == -1)
+    {
+      current->err = EBADF;
+      return -1;
+    }
+  UnixFd *unixFd = current->process->openFiles[index].second;
+  int retval = unixFd->Ftruncate (length);
+  return retval;
+}

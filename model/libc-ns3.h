@@ -81,6 +81,7 @@ NATIVE (memcpy)
 NATIVE (memcmp)
 NATIVE (memmove)
 NATIVE (strcpy)
+DCE    (__strcpy_chk)
 NATIVE (strncpy)
 NATIVE (strcat)
 NATIVE (strncat)
@@ -111,6 +112,11 @@ NATIVE (sprintf)
 NATIVE (snprintf)
 NATIVE (asprintf)
 NATIVE (dprintf)
+
+DCE    (__printf_chk)
+DCE    (__vfprintf_chk)
+DCE    (__fprintf_chk)
+DCE    (__snprintf_chk)
 
 DCE    (fgetc)
 NATIVE (getc)
@@ -371,6 +377,13 @@ DCE    (execle)
 
 DCE    (wait)
 DCE    (waitpid)
+
+NATIVE (basename)
+NATIVE (dirname)
+NATIVE (__xpg_basename)
+
+DCE    (truncate)
+DCE    (ftruncate)
 
 #undef DCE
 #undef NATIVE

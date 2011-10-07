@@ -722,5 +722,15 @@ UnixSocketFd::ChangeSocket (Ptr<Socket> socket)
   m_socket->SetSendCallback (MakeCallback (&UnixSocketFd::SendSocketData, this));
 }
 
+int
+UnixSocketFd::Ftruncate (off_t length)
+{
+  Thread *current = Current ();
+  NS_ASSERT (current != 0);
+  NS_LOG_FUNCTION (this << current << length);
+
+  current->err = EINVAL;
+  return -1;
+}
 
 } // namespace ns3
