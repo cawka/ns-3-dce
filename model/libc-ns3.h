@@ -405,6 +405,11 @@ NATIVE (getgrnam)
 // sys/resource.h
 NATIVE (getrusage) // not sure if native call will give stats about the requested process..
 
+DCE    (openlog)
+DCE    (closelog)
+DCE    (setlogmask)
+DCE    (syslog)
+DCE    (vsyslog)
 
 #undef DCE
 #undef NATIVE
