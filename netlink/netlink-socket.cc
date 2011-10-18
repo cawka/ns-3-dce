@@ -793,76 +793,84 @@ NetlinkSocket::BuildInterfaceAddressDumpMessage (uint32_t pid, uint32_t seq, uin
     }
   return nlmsg_dump;
 }
-MultipartNetlinkMessage
-NetlinkSocket::BuildInterfaceInfoDumpMessage (uint32_t pid, uint32_t seq, uint8_t family)
+
+NetlinkMessage
+NetlinkSocket::BuildInterfaceInfoDumpMessage (uint32_t interface_num)
 {
-  NS_LOG_FUNCTION (this << pid << seq << (int)family);
+  Ptr<NetDevice> dev = m_node->GetDevice (i);
+  Address mac;
+  Address bcast;
+  uint32_t mtu;
+  uint32_t flags = 0;
+
+  mac = dev->GetAddress ();
+  bcast = dev->GetBroadcast ();
+  mtu = (uint32_t)dev->GetMtu ();
+
+  if (dev->IsLinkUp ())
+    {
+      flags |= IFF_RUNNING;
+      flags |= IFF_UP;
+    }
+  if (dev->IsBroadcast ())
+    {
+      flags |= IFF_BROADCAST;
+    }
+  if (dev->IsMulticast ())
+    {
+      flags |= IFF_MULTICAST;
+    }
+
+  NetlinkMessage nlmsg_ifinfo;
+  NetlinkMessageHeader nhr = NetlinkMessageHeader (NETLINK_RTM_NEWLINK, NETLINK_MSG_F_MULTI, seq, pid);
+  InterfaceInfoMessage ifinfomsg;     
+
+  ifinfomsg.SetFamily(0);      // AF_UNSPEC
+  ifinfomsg.SetDeviceType (0); // not clear
+  ifinfomsg.SetInterfaceIndex (i);
+  ifinfomsg.SetDeviceFlags (flags); // not clear
+  ifinfomsg.SetChangeMask (0xffffffff);
+
+  // the ns3 device have no  name, here we set "ns3-device i" for test
+  std::stringstream ss;
+  ss <<  "ns3-device" << i;
+
+  ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_IFNAME,    STRING,  ss.str()));
+  //not used in ns3
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_TXQLEN,    U32,     0));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_WEIGHT,    U32,     0));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_OPERSTATE, U8,      0));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_LINKMODE,  U8,      0));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MAP,       UNSPEC,  0));
+  ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_ADDRESS,   ADDRESS, mac));
+  ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_BROADCAST, ADDRESS, bcast));
+  ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MTU,       U32,     mtu));
+  ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_LINK,      U32,     i));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_QDISC,     STRING,  ""));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MASTER,    U32,     0));
+  //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_STATS,     UNSPEC,  0));
+
+  nlmsg_ifinfo.SetHeader (nhr);
+  nlmsg_ifinfo.SetInterfaceInfoMessage (ifinfomsg);
+
+  return nlmsg_ifinfo;
+}
+
+MultipartNetlinkMessage
+NetlinkSocket::BuildInterfaceInfoDumpMessages ()
+{
+  NS_LOG_FUNCTION (this);
   MultipartNetlinkMessage nlmsg_dump;
   for (uint32_t i = 0; i < m_node->GetNDevices (); i ++)
     {
-      Ptr<NetDevice> dev = m_node->GetDevice (i);
-      Address mac;
-      Address bcast;
-      uint32_t mtu;
-      uint32_t flags = 0;
-
-      mac = dev->GetAddress ();
-      bcast = dev->GetBroadcast ();
-      mtu = (uint32_t)dev->GetMtu ();
-
-      if (dev->IsLinkUp ())
-        {
-          flags |= IFF_RUNNING;
-          flags |= IFF_UP;
-        }
-      if (dev->IsBroadcast ())
-        {
-          flags |= IFF_BROADCAST;
-        }
-      if (dev->IsMulticast ())
-        {
-          flags |= IFF_MULTICAST;
-        }
-
-      NetlinkMessage nlmsg_ifinfo;
-      NetlinkMessageHeader nhr = NetlinkMessageHeader (NETLINK_RTM_NEWLINK, NETLINK_MSG_F_MULTI, seq, pid);
-      InterfaceInfoMessage ifinfomsg;     
-
-      ifinfomsg.SetFamily(0);      // AF_UNSPEC
-      ifinfomsg.SetDeviceType (0); // not clear
-      ifinfomsg.SetInterfaceIndex (i);
-      ifinfomsg.SetDeviceFlags (flags); // not clear
-      ifinfomsg.SetChangeMask (0xffffffff);
-
-      // the ns3 device have no  name, here we set "ns3-device i" for test
-      std::stringstream ss;
-      ss <<  "ns3-device" << i;
-
-      ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_IFNAME,    STRING,  ss.str()));
-      //not used in ns3
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_TXQLEN,    U32,     0));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_WEIGHT,    U32,     0));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_OPERSTATE, U8,      0));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_LINKMODE,  U8,      0));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MAP,       UNSPEC,  0));
-      ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_ADDRESS,   ADDRESS, mac));
-      ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_BROADCAST, ADDRESS, bcast));
-      ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MTU,       U32,     mtu));
-      ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_LINK,      U32,     i));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_QDISC,     STRING,  ""));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_MASTER,    U32,     0));
-      //ifinfomsg.AppendAttribute (NetlinkAttribute (InterfaceInfoMessage::IFL_A_STATS,     UNSPEC,  0));
-
-      nlmsg_ifinfo.SetHeader (nhr);
-      nlmsg_ifinfo.SetInterfaceInfoMessage (ifinfomsg);
-      nlmsg_dump.AppendMessage (nlmsg_ifinfo);
+      nlmsg_dump.AppendMessage (BuildInterfaceInfoDumpMessage (i));
     }
   return nlmsg_dump;
 }
 MultipartNetlinkMessage
-NetlinkSocket::BuildRouteDumpMessage (uint32_t pid, uint32_t seq, uint8_t family)
+NetlinkSocket::BuildRouteDumpMessages ()
 {
-  NS_LOG_FUNCTION (this << pid << seq <<family);
+  NS_LOG_FUNCTION (this);
   MultipartNetlinkMessage nlmsg_dump;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
@@ -872,7 +880,7 @@ NetlinkSocket::BuildRouteDumpMessage (uint32_t pid, uint32_t seq, uint8_t family
   for (uint32_t i = 0; i < ipv4Static->GetNRoutes (); i ++)
     {
       NetlinkMessage nlmsg_rt;
-      NetlinkMessageHeader nhr = NetlinkMessageHeader (NETLINK_RTM_NEWROUTE, NETLINK_MSG_F_MULTI, seq, pid);
+      NetlinkMessageHeader nhr = NetlinkMessageHeader (NETLINK_RTM_NEWROUTE, NETLINK_MSG_F_MULTI, 0, m_srcPid);
       RouteMessage rtmsg;
       Ipv4RoutingTableEntry route = ipv4Static->GetRoute (i);
 

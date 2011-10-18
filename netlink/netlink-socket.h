@@ -158,12 +158,25 @@ private:
   */ 
   int32_t DumpNetlinkRouteMessage (const NetlinkMessage &nlmsg, 
                                    uint16_t type, uint8_t family);
-  MultipartNetlinkMessage BuildInterfaceAddressDumpMessage (uint32_t pid,
-                                                            uint32_t seq, uint8_t family);
-  MultipartNetlinkMessage BuildInterfaceInfoDumpMessage (uint32_t pid,
-                                                         uint32_t seq, uint8_t family);
-  MultipartNetlinkMessage BuildRouteDumpMessage (uint32_t pid,
-                                                 uint32_t seq, uint8_t family);
+
+  MultipartNetlinkMessage
+  BuildInterfaceAddressDumpMessages ();
+  
+  /**
+   * \brief Build an InterfaceInfo message corresponding to n-th interface
+   */
+  NetlinkMessage
+  BuildInterfaceInfoDumpMessage (uint32_t interface_num);
+
+  /**
+   * \brief Build a multipart netlink message consisting of several
+   * (possibly zero) InterfaceInfo dump messages
+   */
+  MultipartNetlinkMessage
+  BuildInterfaceInfoDumpMessages ();
+
+  MultipartNetlinkMessage
+  BuildRouteDumpMessages ();
 
   /**
   * \returns 0 if doing operation(ADD/DEL/GET) is OK, < 0 for an error.
