@@ -869,6 +869,7 @@ DceManager::SetArgv (struct Process *process, std::string filename, std::vector<
   argv[argc] = 0;
   process->originalArgv = argv;
   process->originalArgc = argc;
+  process->originalProgname = argv[0];
 }
 
 void 

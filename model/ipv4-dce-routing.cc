@@ -31,8 +31,10 @@
 #include "ns3/simulator.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/output-stream-wrapper.h"
-#include "ipv4-static-routing.h"
-#include "ipv4-routing-table-entry.h"
+#include "ns3/ipv4-routing-table-entry.h"
+#include "ipv4-dce-routing.h"
+#include "../netlink/netlink-socket.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4DceRouting");
 
@@ -40,10 +42,10 @@ using std::make_pair;
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4DceRouting);
 
 TypeId
-Ipv4StaticRouting::GetTypeId (void)
+Ipv4DceRouting::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4DceRouting")
     .SetParent<Ipv4StaticRouting> ()
@@ -52,15 +54,23 @@ Ipv4StaticRouting::GetTypeId (void)
   return tid;
 }
 
-Ipv4DceRouting::Ipv4StaticRouting () 
+Ipv4DceRouting::Ipv4DceRouting () 
 {
   NS_LOG_FUNCTION (this);
+}
+
+Ipv4DceRouting::~Ipv4DceRouting ()
+{
 }
 
 void 
 Ipv4DceRouting::NotifyInterfaceUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
+
+  Ipv4StaticRouting::NotifyInterfaceUp (i);
+  
+  m_netlink->NotifyIfLinkMessage (m_ipv4->GetNetDevice (i)->GetIfIndex ());
 }
 
 void 
@@ -68,31 +78,45 @@ Ipv4DceRouting::NotifyInterfaceDown (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
 
-  m_netlink->
+  Ipv4StaticRouting::NotifyInterfaceDown (i);
+
+  m_netlink->NotifyIfLinkMessage (m_ipv4->GetNetDevice (i)->GetIfIndex ());
 }
 
 void 
 Ipv4DceRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << " " << address.GetLocal ());
+
+  Ipv4StaticRouting::NotifyAddAddress (interface, address);
+  // NS_LOG_DEBUG ("Not implemented yet");
 }
 void 
 Ipv4DceRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << " " << address.GetLocal ());
+
+  Ipv4StaticRouting::NotifyRemoveAddress (interface, address);
+  // NS_LOG_DEBUG ("Not implemented yet");
 }
 
 void 
 Ipv4DceRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_LOG_FUNCTION (this << ipv4);
-  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
-  Ipv4StaticRouting::SetIpv4 (ipv4);
-
   // do some other stuff
   m_netlink = CreateObject<NetlinkSocket> ();
+  m_netlink->SetNode (ipv4->GetObject<Node> ());
   m_netlink->Bind (); // not really necessary to do this
+
+  Ipv4StaticRouting::SetIpv4 (ipv4);
 }
 
+void 
+Ipv4DceRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  *stream->GetStream () << std::endl;
+  *stream->GetStream () << "Time: " << Simulator::Now ().GetSeconds () << "s" << std::endl;
+  Ipv4StaticRouting::PrintRoutingTable (stream);
+}
 
 } // namespace ns3

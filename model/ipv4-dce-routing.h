@@ -23,8 +23,11 @@
 #define IPV4_DCE_ROUTING_H
 
 #include "ns3/ipv4-static-routing.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
+
+class NetlinkSocket;
 
 /**
  * \ingroup dce
@@ -46,8 +49,8 @@ class Ipv4DceRouting : public Ipv4StaticRouting
 public:
   static TypeId GetTypeId (void);
 
-  Ipv4StaticRouting ();
-  virtual ~Ipv4StaticRouting ();
+  Ipv4DceRouting ();
+  virtual ~Ipv4DceRouting ();
 
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);

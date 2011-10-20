@@ -299,6 +299,8 @@ def build(bld):
         'model/dce-misc.cc',
         'model/dce-node-context.cc',
         'model/dce-wait.cc',
+        'model/ipv4-dce-routing.cc',
+        'helper/ipv4-dce-routing-helper.cc',
         # helper.
         'helper/dce-manager-helper.cc',
         'helper/dce-application-helper.cc',
@@ -311,6 +313,7 @@ def build(bld):
         'model/socket-fd-factory.h',
         'model/loader-factory.h',
         'model/dce-application.h',
+        'model/ipv4-dce-routing.h',
         'helper/dce-manager-helper.h',
         'helper/dce-application-helper.h',
         'helper/quagga-helper.h',
